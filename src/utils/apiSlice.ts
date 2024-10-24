@@ -1,7 +1,8 @@
 // utils/api.js
 import axios from "axios";
 
-const BASE_URL = 'http://localhost:5000/'; // Set your base URL in .env
+// const BASE_URL = 'http://localhost:5000/'; // Set your base URL in .env
+const BASE_URL = 'https://appoint-back.vercel.app/'; // Set your base URL in .env
 
 // Create an instance of axios with default configurations
 const api = axios.create({

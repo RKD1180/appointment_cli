@@ -4,6 +4,7 @@ import DataTable from "@/components/DataTable/DataTable";
 import { SearchInput } from "@/components/ui/search-input";
 import StatusHandle from "@/components/StatusHandle/StatusHandle";
 import SelectComponent from "@/components/SelectComponent/SelectComponent";
+import { useToast } from "@/hooks/use-toast";
 
 interface Participant {
   _id: string;
@@ -38,6 +39,7 @@ const Appointments = () => {
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   // Fetch all appointments for the logged-in user
   const fetchAppointments = async () => {
@@ -47,7 +49,13 @@ const Appointments = () => {
       const response = await apiCall("/appointment/all");
       const userAppointments = response.appointments || [];
       setAppointments(userAppointments);
-      setFilteredAppointments(userAppointments);
+      const formattedData = userAppointments.map((item: any) => ({
+        ...item,
+        createdAt: formatDate(item.createdAt),
+        updatedAt: formatDate(item.updatedAt),
+        date: formatDate(item.date),
+      }));
+      setFilteredAppointments(formattedData);
     } catch (err) {
       console.error("Error fetching appointments:", err);
       setError("Failed to load appointments. Please try again.");
@@ -64,7 +72,10 @@ const Appointments = () => {
   const handleStatusChange = async (id: string, newStatus: string) => {
     try {
       await apiCall(`/appointment/${id}/status`, "POST", { status: newStatus });
-      fetchAppointments(); // Refetch after updating
+      toast({
+        title: "Appointment Status Changed",
+      });
+      fetchAppointments();
     } catch (err) {
       console.error("Error updating status:", err);
       setError("Failed to update status. Please try again.");
@@ -84,12 +95,11 @@ const Appointments = () => {
     filterAppointments(searchQuery, status);
   };
 
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleDateString();
 
   // Filter appointments based on search, status, and date range
-  const filterAppointments = (
-    query: string,
-    status: string | null,
-  ) => {
+  const filterAppointments = (query: string, status: string | null) => {
     let filtered = [...appointments];
 
     if (query) {
@@ -105,8 +115,14 @@ const Appointments = () => {
         (appointment) => appointment.status === status
       );
     }
+    const formattedData = filtered.map((item) => ({
+      ...item,
+      createdAt: formatDate(item.createdAt),
+      updatedAt: formatDate(item.updatedAt),
+      date: formatDate(item.date),
+    }));
 
-    setFilteredAppointments(filtered);
+    setFilteredAppointments(formattedData);
   };
 
   // Define columns for the DataTable
@@ -186,7 +202,7 @@ const Appointments = () => {
         <DataTable<Appointment>
           caption="List of Appointments"
           columns={columns}
-          data={filteredAppointments}
+          data={filteredAppointments.reverse()}
         />
       )}
     </div>

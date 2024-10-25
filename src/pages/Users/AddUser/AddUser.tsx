@@ -6,6 +6,7 @@ import FormInput from "@/components/FormComponent/FormInput";
 import { Button } from "@/components/ui/button";
 import apiCall from "@/utils/apiSlice";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Props {
   fetchUsers: () => void; // Function to fetch users from the API
@@ -24,6 +25,7 @@ const formSchema = z.object({
 
 const AddUser = ({ fetchUsers, closeModal }: Props) => {
   const [message, setMessage] = useState<string | null>(null); // Single state for success/error messages
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,6 +43,9 @@ const AddUser = ({ fetchUsers, closeModal }: Props) => {
         setMessage("User added successfully!"); // Success message
         fetchUsers();
         closeModal();
+        toast({
+          title: "User added successfully!",
+        });
         form.reset();
       } else {
         setMessage(response.message || "Failed to add user."); // API error message

@@ -7,6 +7,7 @@ import FormInput from "@/components/FormComponent/FormInput";
 import { Button } from "@/components/ui/button";
 import apiCall from "@/utils/apiSlice";
 import { User } from "../Users";
+import { useToast } from "@/hooks/use-toast";
 
 // Define the validation schema using Zod
 const appointmentSchema = z.object({
@@ -29,6 +30,7 @@ interface Props {
 const CreateAppointment = ({ user, closeAppointmentModal }: Props) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const { toast } = useToast();
 
   const form = useForm<AppointmentFormData>({
     resolver: zodResolver(appointmentSchema),
@@ -50,9 +52,13 @@ const CreateAppointment = ({ user, closeAppointmentModal }: Props) => {
 
       if (response.status === 201) {
         setSuccess("Appointment created successfully!");
-        setError(""); // Clear any previous errors
+        setError(""); 
+        toast({
+          title: "Appointment created successfully!",
+        });
         form.reset();
         closeAppointmentModal();
+        
       } else {
         setError(response.error.message);
         setSuccess(""); // Clear any previous success messages

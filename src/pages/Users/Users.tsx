@@ -154,7 +154,7 @@ const Users = () => {
           <DataTable<User>
             caption="List of Users"
             columns={columns}
-            data={formattedData}
+            data={formattedData.reverse()}
             actions={actions}
           />
         )}

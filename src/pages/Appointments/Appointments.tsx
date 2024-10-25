@@ -36,10 +36,6 @@ const Appointments = () => {
   >([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
-  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
-    null,
-    null,
-  ]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -79,13 +75,13 @@ const Appointments = () => {
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value;
     setSearchQuery(query);
-    filterAppointments(query, statusFilter, dateRange);
+    filterAppointments(query, statusFilter);
   };
 
   // Handle status filter change
   const handleStatusFilterChange = (status: string | null) => {
     setStatusFilter(status);
-    filterAppointments(searchQuery, status, dateRange);
+    filterAppointments(searchQuery, status);
   };
 
 
@@ -93,7 +89,6 @@ const Appointments = () => {
   const filterAppointments = (
     query: string,
     status: string | null,
-    range: [Date | null, Date | null]
   ) => {
     let filtered = [...appointments];
 

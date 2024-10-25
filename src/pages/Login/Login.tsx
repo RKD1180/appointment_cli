@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import FormWrapper from "@/components/FormComponent/FormWrapper";
 import FormInput from "@/components/FormComponent/FormInput";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import apiCall from "@/utils/apiSlice";
 import { useState } from "react";
 
@@ -21,6 +21,7 @@ const formSchema = z.object({
 const Login = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const navigate = useNavigate()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -36,7 +37,9 @@ const Login = () => {
         // Handle successful login (e.g., redirect or show a success message)
         // store token in session
         sessionStorage.setItem("token", response.user.token);
+        sessionStorage.setItem("user", JSON.stringify(response.user));
         setSuccess("Login successful!");
+        navigate("/dashboard")
       } else {
         setError(response.message);
       }
